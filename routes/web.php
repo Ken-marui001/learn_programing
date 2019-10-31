@@ -15,4 +15,5 @@ Auth::routes();
 
 Route::get('/', 'HomeController@index')->name('home');
 Route::post('/quizzes', 'QuizController@create')->name('quizzes');
+Route::get('/quizzes', 'QuizController@index');
 Route::get('/quizzes/new', 'QuizController@new')->name('quizzes.new');
