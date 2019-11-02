@@ -6,3 +6,9 @@
 
 // Bootstrap
 @import '~bootstrap/scss/bootstrap';
+
+// Other
+*{
+  box-sizing: border-box;
+}
+@import 'quiz.scss';

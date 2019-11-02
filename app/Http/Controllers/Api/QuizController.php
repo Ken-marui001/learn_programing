@@ -1,18 +1,16 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
 use App\Quiz;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 
 class QuizController extends Controller
 {
     public function index(){
         $quizzes = Quiz::all();
-        return view('quizzes/index', ['quizs' => $quizzes,]);
-    }
-    public function create(){
-        return view('quizzes/create');
+        return $quizzes;
     }
     public function store(Request $request){
         $quiz = new Quiz();
@@ -24,6 +22,12 @@ class QuizController extends Controller
         $quiz->code = $request->code;
         $quiz->save();
 
-        return redirect()->route('quizzes.index');
+        return redirect('api/quizzes');
+    }
+
+    public function show($id){
+        // 引数で受け取った$idを元にfindでレコードを取得
+        $quiz = Quiz::find($id);
+        return $quiz;
     }
 }

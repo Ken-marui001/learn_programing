@@ -1,7 +1,7 @@
 @extends('layouts/app')
 @section('content')
 <div class="form">
-  <form action="{{route('quizzes')}}" method="POST">
+  <form action="{{route('quizzes.store')}}" method="POST">
     @csrf
     <div class="field">
       <div class="field-label">

@@ -12,8 +12,6 @@
 */
 // Route::get('/', 'Controller@index') ->name('home');
 Auth::routes();
-
 Route::get('/', 'HomeController@index')->name('home');
-Route::post('/quizzes', 'QuizController@create')->name('quizzes');
-Route::get('/quizzes', 'QuizController@index');
-Route::get('/quizzes/new', 'QuizController@new')->name('quizzes.new');
+Route::resource('quizzes', 'QuizController');
+Route::get('/game', 'GameController@index')->name('game');

@@ -68799,6 +68799,8 @@ module.exports = function(module) {
  * building robust, powerful web applications using React + Laravel.
  */
 __webpack_require__(/*! ./bootstrap */ "./resources/js/bootstrap.js");
+
+__webpack_require__(/*! ./quiz */ "./resources/js/quiz.js");
 /**
  * Next, we will create a fresh React component instance and attach it to
  * the page. Then, you may begin adding components to this application
@@ -68892,6 +68894,68 @@ function Example() {
 if (document.getElementById('example')) {
   react_dom__WEBPACK_IMPORTED_MODULE_1___default.a.render(react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(Example, null), document.getElementById('example'));
 }
+
+/***/ }),
+
+/***/ "./resources/js/quiz.js":
+/*!******************************!*\
+  !*** ./resources/js/quiz.js ***!
+  \******************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+$(function () {
+  function buildhtml(quiz) {
+    var choices = [quiz.answer, quiz.wrong1, quiz.wrong2, quiz.wrong3];
+    choices = arr_shuffle(choices);
+    var html = "<article class=\"quiz\">\n      <div class=\"quiz-text\">\n        <pre>".concat(quiz.text, "</pre>\n        <pre><code>").concat(quiz.code, "</code></pre>\n      </div>\n      <section class=\"quiz-choice\">\n        <p>").concat(choices[0], "</p>\n        <p>").concat(choices[1], "</p>\n        <p>").concat(choices[2], "</p>\n        <p>").concat(choices[3], "</p>\n      </section>\n    </article>");
+    return html;
+  }
+
+  function arr_shuffle(array) {
+    for (var i = array.length - 1; i > 0; i--) {
+      var r = Math.floor(Math.random() * (i + 1));
+      var tmp = array[i];
+      array[i] = array[r];
+      array[r] = tmp;
+    }
+
+    return array;
+  }
+
+  function call_quiz(id) {
+    var url = "/api/quizzes/" + String(id);
+    $.ajax({
+      //ルーティングで設定した通り/api/quizzesとなるよう文字列を書く
+      url: url,
+      //ルーティングで設定した通りhttpメソッドをgetに指定
+      type: 'get',
+      dataType: 'json'
+    }).done(function (data) {
+      console.log('done');
+      $('.quiz-board').empty();
+      $('.quiz-board').append(buildhtml(data));
+    }).fail(function () {
+      console.log('fail');
+    });
+  }
+
+  if (location.pathname.match(/^\/game$/)) {
+    var countup = function countup() {
+      count++;
+      $('#timer').text(count);
+    };
+
+    var count = 0;
+    var quizzes = [1, 2, 3];
+    var timer = null;
+    $('.start.btn').on('click', function () {
+      $('.start-view').removeClass('show');
+      call_quiz(quizzes.pop());
+      timer = setInterval(countup, 100);
+    });
+  }
+});
 
 /***/ }),
 
