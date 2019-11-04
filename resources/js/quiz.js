@@ -42,7 +42,7 @@ $(function(){
       console.log('fail')
     });
   }
-  if(location.pathname.match(/^\/game$/)){
+  if(location.pathname.match(/^\/$/)){
     let count = 0;
     let quizzes = arr_shuffle([...Array(num).keys()].map(i => ++i)).slice(0, 10);
     let timer = null;

@@ -68948,7 +68948,7 @@ $(function () {
     });
   }
 
-  if (location.pathname.match(/^\/game$/)) {
+  if (location.pathname.match(/^\/$/)) {
     var countup = function countup() {
       count++;
       $('#timer').text((count / 10).toFixed(1));
