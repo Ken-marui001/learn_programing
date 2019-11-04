@@ -12,6 +12,8 @@
 */
 // Route::get('/', 'Controller@index') ->name('home');
 Auth::routes();
-Route::get('/', 'HomeController@index')->name('home');
-Route::resource('quizzes', 'QuizController');
-Route::get('/game', 'GameController@index')->name('game');
+// Route::get('/', 'HomeController@index')->name('home');
+Route::get('/', 'GameController@index')->name('game');
+Route::group(['middleware' => ['role:superAdmin']], function () {
+    Route::resource('quizzes', 'QuizController');
+});

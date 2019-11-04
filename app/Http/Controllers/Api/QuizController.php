@@ -12,18 +12,6 @@ class QuizController extends Controller
         $quizzes = Quiz::all();
         return $quizzes;
     }
-    public function store(Request $request){
-        $quiz = new Quiz();
-        $quiz->answer = $request->answer;
-        $quiz->wrong1 = $request->wrong1;
-        $quiz->wrong2 = $request->wrong2;
-        $quiz->wrong3 = $request->wrong3;
-        $quiz->text = $request->text;
-        $quiz->code = $request->code;
-        $quiz->save();
-
-        return redirect('api/quizzes');
-    }
 
     public function show($id){
         // 引数で受け取った$idを元にfindでレコードを取得
@@ -32,6 +20,12 @@ class QuizController extends Controller
     }
 
     public function check($id, $val){
+        /*
+            $idはQuizテーブルのidを表す。
+            $valは回答者の選択した答えを表す。
+            クイズの答えと回答者の選択した答えが等しければ0を返し、間違っている場合は-1を返す。
+        */
+        
         // 引数で受け取った$idを元にfindでレコードを取得
         $quiz = Quiz::find($id);
         if(strcmp($quiz->answer, $val)==0){
