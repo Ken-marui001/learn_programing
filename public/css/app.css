@@ -11104,6 +11104,13 @@ a.text-dark:focus {
   box-sizing: border-box;
 }
 
+#timer {
+  line-height: 20px;
+  font-size: 20px;
+  padding-top: 10px;
+  text-align: center;
+}
+
 .btn {
   font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
   border: solid 2px #0f0f0f;
@@ -11148,6 +11155,59 @@ a.text-dark:focus {
   width: 500px;
   height: 400px;
   margin: 20px auto;
-  background-color: #cfcfcf;
+  background-color: #d8f6fc;
+}
+
+.quiz {
+  padding: 20px 10px 10px;
+  height: 100%;
+  display: -webkit-box;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+          flex-direction: column;
+  position: relative;
+}
+
+.quiz__text {
+  height: 300px;
+}
+
+.quiz__text .codes {
+  height: 160px;
+  overflow: scroll;
+  background-color: #e6e6e6;
+  border-radius: 5px;
+  color: #505050;
+  padding: 5px;
+}
+
+.quiz__choice {
+  height: 200px;
+  width: 100%;
+  display: -webkit-box;
+  display: flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+          flex-flow: row wrap;
+}
+
+.quiz__choice .choice {
+  display: -webkit-box;
+  display: flex;
+  -webkit-box-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+          justify-content: center;
+  background-color: #98d0db;
+  border-radius: 5px;
+  width: calc(50% - 10px);
+  margin: 5px;
+  font-weight: 500;
+  text-align: center;
+}
+
+.quiz__choice div:hover {
+  background-color: #4edcf8;
 }
 

@@ -30,4 +30,19 @@ class QuizController extends Controller
         $quiz = Quiz::find($id);
         return $quiz;
     }
+
+    public function check($id, $val){
+        // 引数で受け取った$idを元にfindでレコードを取得
+        $quiz = Quiz::find($id);
+        if(strcmp($quiz->answer, $val)==0){
+            return 0;
+        }else{
+            return -1;
+        }
+    }
+
+    public function count(){
+        $num = Quiz::count();
+        return $num;
+    }
 }

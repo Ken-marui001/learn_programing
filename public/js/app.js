@@ -68904,11 +68904,19 @@ if (document.getElementById('example')) {
 /*! no static exports found */
 /***/ (function(module, exports) {
 
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
+
+function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
+
 $(function () {
   function buildhtml(quiz) {
     var choices = [quiz.answer, quiz.wrong1, quiz.wrong2, quiz.wrong3];
     choices = arr_shuffle(choices);
-    var html = "<article class=\"quiz\">\n      <div class=\"quiz-text\">\n        <pre>".concat(quiz.text, "</pre>\n        <pre><code>").concat(quiz.code, "</code></pre>\n      </div>\n      <section class=\"quiz-choice\">\n        <p>").concat(choices[0], "</p>\n        <p>").concat(choices[1], "</p>\n        <p>").concat(choices[2], "</p>\n        <p>").concat(choices[3], "</p>\n      </section>\n    </article>");
+    var html = "<article class=\"quiz\" quiz-id=\"".concat(quiz.id, "\">\n      <div class=\"quiz__text\">\n        <pre><p>").concat(quiz.text, "</p></pre>\n        <div class=\"codes\"><pre><code>").concat(quiz.code, "</code></pre></div>\n      </div>\n      <section class=\"quiz__choice\">\n        <div class=\"choice\">").concat(choices[0], "</div>\n        <div class=\"choice\">").concat(choices[1], "</div>\n        <div class=\"choice\">").concat(choices[2], "</div>\n        <div class=\"choice\">").concat(choices[3], "</div>\n      </section>\n    </article>");
     return html;
   }
 
@@ -68932,7 +68940,7 @@ $(function () {
       type: 'get',
       dataType: 'json'
     }).done(function (data) {
-      console.log('done');
+      // console.log('done')
       $('.quiz-board').empty();
       $('.quiz-board').append(buildhtml(data));
     }).fail(function () {
@@ -68943,16 +68951,44 @@ $(function () {
   if (location.pathname.match(/^\/game$/)) {
     var countup = function countup() {
       count++;
-      $('#timer').text(count);
+      $('#timer').text((count / 10).toFixed(1));
     };
 
     var count = 0;
-    var quizzes = [1, 2, 3];
+    var quizzes = arr_shuffle(_toConsumableArray(Array(num).keys()).map(function (i) {
+      return ++i;
+    })).slice(0, 10);
     var timer = null;
     $('.start.btn').on('click', function () {
       $('.start-view').removeClass('show');
       call_quiz(quizzes.pop());
       timer = setInterval(countup, 100);
+    });
+    $('.quiz-board').on('click', '.choice', function () {
+      var id = $(this).parents(".quiz").attr('quiz-id');
+      var val = $(this).text();
+      var url = "/api/quizzes/" + String(id) + "/check/" + String(val);
+      $.ajax({
+        //ルーティングで設定した通り/api/quizzesとなるよう文字列を書く
+        url: url,
+        //ルーティングで設定した通りhttpメソッドをgetに指定
+        type: 'get',
+        dataType: 'json'
+      }).done(function (data) {
+        if (data == 0) {
+          if (quizzes.length != 0) {
+            call_quiz(quizzes.pop());
+          } else {
+            clearInterval(timer);
+            timer = null;
+            console.log('finish');
+          }
+        } else {
+          count += 50;
+        }
+      }).fail(function () {
+        console.log('fail');
+      });
     });
   }
 });

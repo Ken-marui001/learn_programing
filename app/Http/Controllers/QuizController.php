@@ -16,7 +16,7 @@ class QuizController extends Controller
     }
     public function store(Request $request){
         $quiz = new Quiz();
-        $quiz->answer = $request->answer;
+        $quiz->answer = rtrim($request->answer);
         $quiz->wrong1 = $request->wrong1;
         $quiz->wrong2 = $request->wrong2;
         $quiz->wrong3 = $request->wrong3;
@@ -24,6 +24,25 @@ class QuizController extends Controller
         $quiz->code = $request->code;
         $quiz->save();
 
+        return redirect()->route('quizzes.index');
+    }
+    public function edit($id){
+        $quiz = Quiz::find($id);
+        return view('quizzes/edit', ['quiz' => $quiz,]);
+    }
+    public function update(Request $request, $id){
+        // idを元にレコードを検索して$quizに代入
+        $quiz = Quiz::find($id);
+        // editで編集されたデータを$quizにそれぞれ代入する
+        $quiz->answer = rtrim($request->answer);
+        $quiz->wrong1 = $request->wrong1;
+        $quiz->wrong2 = $request->wrong2;
+        $quiz->wrong3 = $request->wrong3;
+        $quiz->text = $request->text;
+        $quiz->code = $request->code;
+        // 保存
+        $quiz->save();
+        // indexへリダイレクト
         return redirect()->route('quizzes.index');
     }
 }

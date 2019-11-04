@@ -18,4 +18,6 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 Route::group(['middleware' => ['api']], function(){
     Route::resource('quizzes', 'Api\QuizController', ['except' => ['create', 'edit']]);
+    Route::get('/quizzes/{id}/check/{val}', 'Api\QuizController@check')->name('quizzes.check');
+    Route::get('/quizzes_count', 'Api\QuizController@count')->name('quizzes.count');
   });
