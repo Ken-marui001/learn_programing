@@ -17,6 +17,7 @@ $(function(){
 
     return html;
   }
+
   function arr_shuffle(array){
     for(var i = array.length - 1; i > 0; i--){
       var r = Math.floor(Math.random() * (i + 1));
@@ -26,6 +27,7 @@ $(function(){
     }
     return array;
   }
+
   function call_quiz(id){
     let url = "/api/quizzes/" + String(id);
     $.ajax({
@@ -42,10 +44,34 @@ $(function(){
       console.log('fail')
     });
   }
+
+  function add_ranking(score, name=null){
+    //非同期通信でのCSRF
+    $.ajaxSetup({
+      headers: {
+          'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+      }
+    });
+    $.ajax({
+      //ルーティングで設定した通り/api/quizzesとなるよう文字列を書く
+      url: '/api/ranking',
+      //ルーティングで設定した通りhttpメソッドをgetに指定
+      type: 'post',
+      data: {name: name, time: score},
+      dataType: 'json'
+    }).done(function(data){
+      console.log(data)
+    }).fail(function(){
+      console.log('fail')
+    });
+  }
+
+  //GameController@indexが呼ばれた時の処理
   if(location.pathname.match(/^\/$/)){
     let count = 0;
-    let quizzes = arr_shuffle([...Array(num).keys()].map(i => ++i)).slice(0, 10);
     let timer = null;
+    let quizzes = arr_shuffle([...Array(num).keys()].map(i => ++i)).slice(0, 10);
+    let wrong_count = 0;
 
     function countup(){
       count++;
@@ -62,6 +88,7 @@ $(function(){
       const id = $(this).parents(".quiz").attr('quiz-id');
       const val = $(this).text();
       let url = "/api/quizzes/" + String(id) + "/check/" + String(val)
+      
       $.ajax({
         //ルーティングで設定した通り/api/quizzesとなるよう文字列を書く
         url: url,
@@ -70,15 +97,19 @@ $(function(){
         dataType: 'json'
       }).done(function(data){
         if(data==0){
+          wrong_count=0;
           if(quizzes.length!=0){
             call_quiz(quizzes.pop());
           }else{
             clearInterval(timer);
-			      timer = null;
+            timer = null;
+
+            add_ranking(count, user_name);
             console.log('finish')
           }
         }else{
-          count +=50;
+          count +=　50*(10**wrong_count);
+          wrong_count++;
         }
       }).fail(function(){
         console.log('fail')

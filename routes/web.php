@@ -10,9 +10,10 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
-// Route::get('/', 'Controller@index') ->name('home');
+
+//User Management
 Auth::routes();
-// Route::get('/', 'HomeController@index')->name('home');
+
 Route::get('/', 'GameController@index')->name('game');
 Route::group(['middleware' => ['role:superAdmin']], function () {
     Route::resource('quizzes', 'QuizController');

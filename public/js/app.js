@@ -68948,6 +68948,32 @@ $(function () {
     });
   }
 
+  function add_ranking(score) {
+    var name = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+    //非同期通信でのCSRF
+    $.ajaxSetup({
+      headers: {
+        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+      }
+    });
+    $.ajax({
+      //ルーティングで設定した通り/api/quizzesとなるよう文字列を書く
+      url: '/api/ranking',
+      //ルーティングで設定した通りhttpメソッドをgetに指定
+      type: 'post',
+      data: {
+        name: name,
+        time: score
+      },
+      dataType: 'json'
+    }).done(function (data) {
+      console.log(data);
+    }).fail(function () {
+      console.log('fail');
+    });
+  } //GameController@indexが呼ばれた時の処理
+
+
   if (location.pathname.match(/^\/$/)) {
     var countup = function countup() {
       count++;
@@ -68955,10 +68981,11 @@ $(function () {
     };
 
     var count = 0;
+    var timer = null;
     var quizzes = arr_shuffle(_toConsumableArray(Array(num).keys()).map(function (i) {
       return ++i;
     })).slice(0, 10);
-    var timer = null;
+    var wrong_count = 0;
     $('.start.btn').on('click', function () {
       $('.start-view').removeClass('show');
       call_quiz(quizzes.pop());
@@ -68976,15 +69003,19 @@ $(function () {
         dataType: 'json'
       }).done(function (data) {
         if (data == 0) {
+          wrong_count = 0;
+
           if (quizzes.length != 0) {
             call_quiz(quizzes.pop());
           } else {
             clearInterval(timer);
             timer = null;
+            add_ranking(count, user_name);
             console.log('finish');
           }
         } else {
-          count += 50;
+          count += 50 * Math.pow(10, wrong_count);
+          wrong_count++;
         }
       }).fail(function () {
         console.log('fail');
