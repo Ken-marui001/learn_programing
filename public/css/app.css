@@ -11169,6 +11169,10 @@ a.text-dark:focus {
   position: relative;
 }
 
+.quiz__counter {
+  text-align: right;
+}
+
 .quiz__text {
   height: 300px;
 }
