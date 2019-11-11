@@ -5,7 +5,9 @@ Programing_QUiz is a learning page about programing with quiz. You can challenge
 # DEMO
  
 You challenge quizzes with 4 choices. if you choose correct answer, you can challenge next quiz. but if you choose wrong answer, your score increase time by 5 seconds
- 
+![](https://i.gyazo.com/2fb65b4dd3c9b7a6307a402188ecfc13.gif)
+
+
 # Features
  
 Programing_Quiz can compete for time finish quizzes.
