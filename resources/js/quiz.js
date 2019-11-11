@@ -46,6 +46,19 @@ $(function(){
     });
   }
 
+  function reaction(action){
+    let comment = action==="maru" ? "正　解" : "不正解..."
+    let html=`<div class="reaction-box">
+      <div class="reaction">
+        <img src="https://ken-marui001.s3.ap-northeast-1.amazonaws.com/Heroku/learn_programing/marks/mark_${action}.png" width="100" height="100">
+        <p class="${action}">${comment}</p>
+      </div>
+    </div>`;
+
+    $('.quiz-board').prepend(html);
+    $(".reaction-box").delay(500).fadeOut("slow");
+  }
+
   function add_ranking(score, name=null){
     //非同期通信でのCSRF
     $.ajaxSetup({
@@ -103,6 +116,7 @@ $(function(){
           current_num++;
           if(quizzes.length!=0){
             //問題に正解しているかつ、問題が残っている
+            reaction("maru");
             call_quiz(quizzes.pop(), current_num);
           }else{
             //最後の問題に正解した時
@@ -113,6 +127,7 @@ $(function(){
           }
         }else{
           //連続で間違えると指数関数でペナルティが増える
+          reaction("batsu");
           count +=　50*(10**wrong_count);
           wrong_count++;
         }

@@ -68948,6 +68948,13 @@ $(function () {
     });
   }
 
+  function reaction(action) {
+    var comment = action === "maru" ? "正　解" : "不正解...";
+    var html = "<div class=\"reaction-box\">\n      <div class=\"reaction\">\n        <img src=\"https://ken-marui001.s3.ap-northeast-1.amazonaws.com/Heroku/learn_programing/marks/mark_".concat(action, ".png\" width=\"100\" height=\"100\">\n        <p class=\"").concat(action, "\">").concat(comment, "</p>\n      </div>\n    </div>");
+    $('.quiz-board').prepend(html);
+    $(".reaction-box").delay(500).fadeOut("slow");
+  }
+
   function add_ranking(score) {
     var name = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
     //非同期通信でのCSRF
@@ -69009,6 +69016,7 @@ $(function () {
 
           if (quizzes.length != 0) {
             //問題に正解しているかつ、問題が残っている
+            reaction("maru");
             call_quiz(quizzes.pop(), current_num);
           } else {
             //最後の問題に正解した時
@@ -69018,6 +69026,7 @@ $(function () {
           }
         } else {
           //連続で間違えると指数関数でペナルティが増える
+          reaction("batsu");
           count += 50 * Math.pow(10, wrong_count);
           wrong_count++;
         }

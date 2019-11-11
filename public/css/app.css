@@ -11152,6 +11152,7 @@ a.text-dark:focus {
 }
 
 .quiz-board {
+  position: relative;
   width: 500px;
   height: 400px;
   margin: 20px auto;
@@ -11213,5 +11214,45 @@ a.text-dark:focus {
 
 .quiz__choice div:hover {
   background-color: #4edcf8;
+}
+
+.reaction-box {
+  pointer-events: none;
+  position: absolute;
+  justify-content: space-around;
+  display: -webkit-box;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+          flex-direction: column;
+  /* 子要素をflexboxにより縦方向に揃える */
+  -webkit-box-pack: center;
+          justify-content: center;
+  /* 子要素をflexboxにより中央に配置する */
+  -webkit-box-align: center;
+          align-items: center;
+  /* 子要素をflexboxにより中央に配置する */
+  z-index: 10;
+  width: 100%;
+  height: 100%;
+}
+
+.reaction {
+  display: -webkit-box;
+  display: flex;
+}
+
+.reaction p {
+  font-family: "Kosugi Maru", sans-serif;
+  font-size: 70px;
+  line-height: 100px;
+}
+
+.reaction .batsu {
+  color: #e42323;
+}
+
+.reaction .maru {
+  color: blue;
 }
 
