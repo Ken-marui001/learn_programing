@@ -56,7 +56,7 @@ $(function(){
     </div>`;
 
     $('.quiz-board').prepend(html);
-    $(".reaction-box").delay(500).fadeOut("slow");
+    $(".reaction-box").delay(200).fadeOut("slow").delay(100);
   }
 
   function add_ranking(score, name=null){
@@ -101,22 +101,21 @@ $(function(){
     $('.quiz-board').on('click', '.choice', function(){
       const id = $(this).parents(".quiz").attr('quiz-id');
       const val = $(this).text();
+      //ルーティングで設定した通り/api/quizzes/{id}/check/{val}となるよう文字列
       let url = "/api/quizzes/" + String(id) + "/check/" + String(val)
       
+      //問題番号と回答を送る事で、正解なら"0"を、不正解なら"-1"を返す
       $.ajax({
-        //ルーティングで設定した通り/api/quizzes/{id}/check/{val}となるよう文字列を書く
         url: url,
-        //ルーティングで設定した通りhttpメソッドをgetに指定
         type: 'get',
         dataType: 'json'
       }).done(function(data){
-        //問題番号と回答を送る事で、正解なら"0"を、不正解なら"-1"を返す
         if(data==0){
           wrong_count=0;
           current_num++;
+          reaction("maru");
           if(quizzes.length!=0){
             //問題に正解しているかつ、問題が残っている
-            reaction("maru");
             call_quiz(quizzes.pop(), current_num);
           }else{
             //最後の問題に正解した時

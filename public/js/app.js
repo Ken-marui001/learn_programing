@@ -68952,7 +68952,7 @@ $(function () {
     var comment = action === "maru" ? "正　解" : "不正解...";
     var html = "<div class=\"reaction-box\">\n      <div class=\"reaction\">\n        <img src=\"https://ken-marui001.s3.ap-northeast-1.amazonaws.com/Heroku/learn_programing/marks/mark_".concat(action, ".png\" width=\"100\" height=\"100\">\n        <p class=\"").concat(action, "\">").concat(comment, "</p>\n      </div>\n    </div>");
     $('.quiz-board').prepend(html);
-    $(".reaction-box").delay(500).fadeOut("slow");
+    $(".reaction-box").delay(200).fadeOut("slow").delay(100);
   }
 
   function add_ranking(score) {
@@ -69000,12 +69000,11 @@ $(function () {
     });
     $('.quiz-board').on('click', '.choice', function () {
       var id = $(this).parents(".quiz").attr('quiz-id');
-      var val = $(this).text();
+      var val = $(this).text(); //ルーティングで設定した通り/api/quizzes/{id}/check/{val}となるよう文字列
+
       var url = "/api/quizzes/" + String(id) + "/check/" + String(val);
       $.ajax({
-        //ルーティングで設定した通り/api/quizzes/{id}/check/{val}となるよう文字列を書く
         url: url,
-        //ルーティングで設定した通りhttpメソッドをgetに指定
         type: 'get',
         dataType: 'json'
       }).done(function (data) {
@@ -69013,10 +69012,10 @@ $(function () {
         if (data == 0) {
           wrong_count = 0;
           current_num++;
+          reaction("maru");
 
           if (quizzes.length != 0) {
             //問題に正解しているかつ、問題が残っている
-            reaction("maru");
             call_quiz(quizzes.pop(), current_num);
           } else {
             //最後の問題に正解した時
