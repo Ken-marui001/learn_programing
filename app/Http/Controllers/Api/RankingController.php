@@ -18,7 +18,7 @@ class RankingController extends Controller
         }
         $ranking->time = floatval($request->time)/10;
         $ranking->save();
-
-        return Ranking::all()->orderBy('time', 'asc')->take(20)->get();
+        $ranking_tops = Ranking::orderBy('time', 'asc')->take(20)->get();
+        return $ranking_tops;
     }
 }
