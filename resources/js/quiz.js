@@ -139,7 +139,7 @@ $(function(){
 
     $('.start.btn').on('click', function(){
       $('.start-view').removeClass('show');
-      call_quiz(quizzes.pop(), current_num);
+      // call_quiz(quizzes.pop(), current_num);
       timer = setInterval(countup, 100);
     })
 
