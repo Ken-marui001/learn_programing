@@ -1,5 +1,5 @@
 $(function(){
-  function buildhtml(quiz, current_num){
+  function buildQuizHtml(quiz, current_num){
     let choices = [quiz.answer, quiz.wrong1, quiz.wrong2, quiz.wrong3];
     choices = arr_shuffle(choices);
     let html =`<article class="quiz" quiz-id="${quiz.id}">
@@ -16,6 +16,50 @@ $(function(){
       </section>
     </article>`;
 
+    return html;
+  }
+
+  function buildRankingHtml(data, score){
+    let ranking_html ="";
+    let rank = "";
+    let html ="";
+
+    data[0].forEach(function(record, i){
+      let change_color = "";
+      console.log(record)
+      if (data[1] === i+1) {
+        change_color = 'class="rankIn"';
+      }
+
+      ranking_html += `<li ${change_color}>
+                <div class="rankings__num">
+                  第<span>${i+1}</span>位
+                </div>
+                <div class="rankings__time">
+                  ${parseFloat(record.time).toFixed(1)}秒
+                </div>
+                <div class="rankings__name">
+                  ${record.name}
+                </div>
+              </li>`;
+    });
+
+    if(data[1]>100){
+      rank = "ランク外です。100位目指して頑張りましょう!!";
+    }else if(data[1]>20){
+      rank = `<span>${data[1]}位</span>です。入賞を目指しましょう!!`;
+    }else{
+      rank = `<span>${data[1]}位</span>です。入賞おめでとうございます!!`;
+    }
+    html=`<div class="result">
+            <div class="your-record">
+              <p>あなたの記録は${String((score/10).toFixed(1))}秒です</p>
+              <p>順位は${rank}</p>
+            </div>
+            <ul class="rankings">
+              ${ranking_html}
+            </ul>
+          </div>`;
     return html;
   }
 
@@ -40,7 +84,7 @@ $(function(){
     }).done(function(data){
       // console.log('done')
       $('.quiz-board').empty();
-      $('.quiz-board').append(buildhtml(data, current_num));
+      $('.quiz-board').append(buildQuizHtml(data, current_num));
     }).fail(function(){
       console.log('fail')
     });
@@ -73,7 +117,8 @@ $(function(){
       data: {name: name, time: score},
       dataType: 'json'
     }).done(function(data){
-      console.log(data)
+      $('.quiz-board').empty();
+      $('.quiz-board').append(buildRankingHtml(data, score));
     }).fail(function(){
       console.log('fail')
     });

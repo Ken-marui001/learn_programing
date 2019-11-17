@@ -68913,10 +68913,37 @@ function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.
 function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
 
 $(function () {
-  function buildhtml(quiz, current_num) {
+  function buildQuizHtml(quiz, current_num) {
     var choices = [quiz.answer, quiz.wrong1, quiz.wrong2, quiz.wrong3];
     choices = arr_shuffle(choices);
     var html = "<article class=\"quiz\" quiz-id=\"".concat(quiz.id, "\">\n      <div class=\"quiz__counter\">").concat(current_num, "/10</div>\n      <div class=\"quiz__text\">\n        <pre><p>").concat(quiz.text, "</p></pre>\n        <div class=\"codes\"><pre><code>").concat(quiz.code, "</code></pre></div>\n      </div>\n      <section class=\"quiz__choice\">\n        <div class=\"choice\">").concat(choices[0], "</div>\n        <div class=\"choice\">").concat(choices[1], "</div>\n        <div class=\"choice\">").concat(choices[2], "</div>\n        <div class=\"choice\">").concat(choices[3], "</div>\n      </section>\n    </article>");
+    return html;
+  }
+
+  function buildRankingHtml(data, score) {
+    var ranking_html = "";
+    var rank = "";
+    var html = "";
+    data[0].forEach(function (record, i) {
+      var change_color = "";
+      console.log(record);
+
+      if (data[1] === i + 1) {
+        change_color = 'class="rankIn"';
+      }
+
+      ranking_html += "<li ".concat(change_color, ">\n                <div class=\"rankings__num\">\n                  \u7B2C<span>").concat(i + 1, "</span>\u4F4D\n                </div>\n                <div class=\"rankings__time\">\n                  ").concat(parseFloat(record.time).toFixed(1), "\u79D2\n                </div>\n                <div class=\"rankings__name\">\n                  ").concat(record.name, "\n                </div>\n              </li>");
+    });
+
+    if (data[1] > 100) {
+      rank = "ランク外です。100位目指して頑張りましょう!!";
+    } else if (data[1] > 20) {
+      rank = "<span>".concat(data[1], "\u4F4D</span>\u3067\u3059\u3002\u5165\u8CDE\u3092\u76EE\u6307\u3057\u307E\u3057\u3087\u3046!!");
+    } else {
+      rank = "<span>".concat(data[1], "\u4F4D</span>\u3067\u3059\u3002\u5165\u8CDE\u304A\u3081\u3067\u3068\u3046\u3054\u3056\u3044\u307E\u3059!!");
+    }
+
+    html = "<div class=\"result\">\n            <div class=\"your-record\">\n              <p>\u3042\u306A\u305F\u306E\u8A18\u9332\u306F".concat(String((score / 10).toFixed(1)), "\u79D2\u3067\u3059</p>\n              <p>\u9806\u4F4D\u306F").concat(rank, "</p>\n            </div>\n            <ul class=\"rankings\">\n              ").concat(ranking_html, "\n            </ul>\n          </div>");
     return html;
   }
 
@@ -68942,7 +68969,7 @@ $(function () {
     }).done(function (data) {
       // console.log('done')
       $('.quiz-board').empty();
-      $('.quiz-board').append(buildhtml(data, current_num));
+      $('.quiz-board').append(buildQuizHtml(data, current_num));
     }).fail(function () {
       console.log('fail');
     });
@@ -68973,7 +69000,8 @@ $(function () {
       },
       dataType: 'json'
     }).done(function (data) {
-      console.log(data);
+      $('.quiz-board').empty();
+      $('.quiz-board').append(buildRankingHtml(data, score));
     }).fail(function () {
       console.log('fail');
     });
@@ -69002,13 +69030,13 @@ $(function () {
       var id = $(this).parents(".quiz").attr('quiz-id');
       var val = $(this).text(); //ルーティングで設定した通り/api/quizzes/{id}/check/{val}となるよう文字列
 
-      var url = "/api/quizzes/" + String(id) + "/check/" + String(val);
+      var url = "/api/quizzes/" + String(id) + "/check/" + String(val); //問題番号と回答を送る事で、正解なら"0"を、不正解なら"-1"を返す
+
       $.ajax({
         url: url,
         type: 'get',
         dataType: 'json'
       }).done(function (data) {
-        //問題番号と回答を送る事で、正解なら"0"を、不正解なら"-1"を返す
         if (data == 0) {
           wrong_count = 0;
           current_num++;

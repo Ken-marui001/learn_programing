@@ -115,3 +115,27 @@
     color: blue;
   }
 }
+
+.result{
+  width: 100%;
+  height: 100%;
+  padding: 10px;
+}
+
+.rankings{
+  height: calc(100% - 80px);
+  overflow: scroll;
+  padding: 0 40px;
+  margin: 10px 0 0;
+  border-radius: 5px;
+  background-color: rgb(194, 241, 250);
+  li{
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .rankIn{
+    font-weight: bold;
+    background-color: rgb(145, 235, 253);
+  }
+}

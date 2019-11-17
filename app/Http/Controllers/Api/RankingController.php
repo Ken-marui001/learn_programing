@@ -11,6 +11,7 @@ class RankingController extends Controller
 {
     public function store(Request $request){
         $ranking = new Ranking();
+        //ログインしていないユーザーの場合にはGuestとして登録する
         if($request->name === null){
             $num = strval(Ranking::count()+1);
             $ranking->name = 'Guest'.$num;
