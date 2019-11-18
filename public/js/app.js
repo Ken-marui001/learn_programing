@@ -71435,6 +71435,17 @@ function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || func
 
 
 
+function arr_shuffle(array) {
+  for (var i = array.length - 1; i > 0; i--) {
+    var r = Math.floor(Math.random() * (i + 1));
+    var tmp = array[i];
+    array[i] = array[r];
+    array[r] = tmp;
+  }
+
+  return array;
+}
+
 var Quiz =
 /*#__PURE__*/
 function (_React$Component) {
@@ -71445,15 +71456,17 @@ function (_React$Component) {
     value: function getQuiz() {
       var _this2 = this;
 
-      superagent__WEBPACK_IMPORTED_MODULE_2___default.a.get("/api/quizzes/10").end(function (err, quiz) {
-        console.log(err, JSON.parse(quiz.text));
+      superagent__WEBPACK_IMPORTED_MODULE_2___default.a.get("/api/quizzes/10").end(function (err, res) {
+        console.log(err, JSON.parse(res.text));
 
         if (err === null) {
-          console.log(JSON.parse(quiz.text));
-          console.log("hi");
+          var quiz = JSON.parse(res.text);
+          var choices = [quiz.answer, quiz.wrong1, quiz.wrong2, quiz.wrong3];
+          choices = arr_shuffle(choices);
 
           _this2.setState({
-            quiz: JSON.parse(quiz.text)
+            quiz: quiz,
+            choices: choices
           });
         } else {
           alert(err);
@@ -71469,7 +71482,8 @@ function (_React$Component) {
 
     _this = _possibleConstructorReturn(this, _getPrototypeOf(Quiz).call(this, props));
     _this.state = {
-      quiz: {}
+      quiz: [],
+      choices: []
     };
 
     _this.getQuiz();
@@ -71493,13 +71507,13 @@ function (_React$Component) {
         className: "quiz__choice"
       }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
         className: "choice"
-      }, "test"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+      }, this.state.choices[0]), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
         className: "choice"
-      }, "test"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+      }, this.state.choices[1]), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
         className: "choice"
-      }, "test"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+      }, this.state.choices[2]), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
         className: "choice"
-      }, "test")));
+      }, this.state.choices[3])));
     }
   }]);
 

@@ -2,15 +2,26 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import request from 'superagent';
 
+function arr_shuffle(array){
+  for(var i = array.length - 1; i > 0; i--){
+    var r = Math.floor(Math.random() * (i + 1));
+    var tmp = array[i];
+    array[i] = array[r];
+    array[r] = tmp;
+  }
+  return array;
+}
 
 class Quiz extends React.Component {
   getQuiz(){
-    request.get("/api/quizzes/10").end((err, quiz)=>{
-       console.log(err, JSON.parse(quiz.text))
+    request.get("/api/quizzes/10").end((err, res)=>{
+       console.log(err, JSON.parse(res.text))
       if(err === null){
-        console.log(JSON.parse(quiz.text));
-        console.log("hi");
-        this.setState({quiz: JSON.parse(quiz.text)})
+        let quiz = JSON.parse(res.text);
+        let choices = [quiz.answer, quiz.wrong1, quiz.wrong2, quiz.wrong3];
+
+        choices = arr_shuffle(choices);
+        this.setState({quiz: quiz, choices: choices})
       }else{
         alert(err)
       }
@@ -19,7 +30,8 @@ class Quiz extends React.Component {
   constructor(props){
     super(props);
     this.state={
-      quiz: {},
+      quiz: [],
+      choices: [],
     };
     this.getQuiz();
   }
@@ -32,10 +44,10 @@ class Quiz extends React.Component {
           <div className="codes"><pre><code>{this.state.quiz.code}</code></pre></div>
         </div>
         <section className="quiz__choice">
-          <div className="choice">test</div>
-          <div className="choice">test</div>
-          <div className="choice">test</div>
-          <div className="choice">test</div>
+          <div className="choice">{this.state.choices[0]}</div>
+          <div className="choice">{this.state.choices[1]}</div>
+          <div className="choice">{this.state.choices[2]}</div>
+          <div className="choice">{this.state.choices[3]}</div>
         </section>
       </article>
     );
