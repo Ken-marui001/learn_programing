@@ -71417,15 +71417,15 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
-
 function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
 
 function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
 
@@ -71440,42 +71440,66 @@ var Quiz =
 function (_React$Component) {
   _inherits(Quiz, _React$Component);
 
-  function Quiz() {
+  _createClass(Quiz, [{
+    key: "getQuiz",
+    value: function getQuiz() {
+      var _this2 = this;
+
+      superagent__WEBPACK_IMPORTED_MODULE_2___default.a.get("/api/quizzes/10").end(function (err, quiz) {
+        console.log(err, JSON.parse(quiz.text));
+
+        if (err === null) {
+          console.log(JSON.parse(quiz.text));
+          console.log("hi");
+
+          _this2.setState({
+            quiz: JSON.parse(quiz.text)
+          });
+        } else {
+          alert(err);
+        }
+      });
+    }
+  }]);
+
+  function Quiz(props) {
+    var _this;
+
     _classCallCheck(this, Quiz);
 
-    return _possibleConstructorReturn(this, _getPrototypeOf(Quiz).apply(this, arguments));
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(Quiz).call(this, props));
+    _this.state = {
+      quiz: {}
+    };
+
+    _this.getQuiz();
+
+    return _this;
   }
 
   _createClass(Quiz, [{
     key: "render",
     value: function render() {
-      superagent__WEBPACK_IMPORTED_MODULE_2___default.a.get("/api/quizzes/10").end(function (err, quiz) {
-        //  console.log(err, data)
-        if (err === null) {
-          return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("article", {
-            className: "quiz",
-            "quiz-id": quiz.id
-          }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
-            className: "quiz__counter"
-          }, "1/10"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
-            className: "quiz__text"
-          }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("pre", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("p", null, quiz.text)), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
-            className: "codes"
-          }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("pre", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("code", null, quiz.code)))), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("section", {
-            className: "quiz__choice"
-          }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
-            className: "choice"
-          }, "test"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
-            className: "choice"
-          }, "test"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
-            className: "choice"
-          }, "test"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
-            className: "choice"
-          }, "test")));
-        } else {
-          alert(err);
-        }
-      });
+      return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("article", {
+        className: "quiz",
+        "quiz-id": this.state.quiz.id
+      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+        className: "quiz__counter"
+      }, "1/10"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+        className: "quiz__text"
+      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("pre", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("p", null, this.state.quiz.text)), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+        className: "codes"
+      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("pre", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("code", null, this.state.quiz.code)))), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("section", {
+        className: "quiz__choice"
+      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+        className: "choice"
+      }, "test"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+        className: "choice"
+      }, "test"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+        className: "choice"
+      }, "test"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+        className: "choice"
+      }, "test")));
     }
   }]);
 

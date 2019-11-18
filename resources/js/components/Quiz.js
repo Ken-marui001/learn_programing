@@ -4,29 +4,41 @@ import request from 'superagent';
 
 
 class Quiz extends React.Component {
-  render(){
-    request.get("/api/quizzes/10").end(function(err, quiz){
-      //  console.log(err, data)
+  getQuiz(){
+    request.get("/api/quizzes/10").end((err, quiz)=>{
+       console.log(err, JSON.parse(quiz.text))
       if(err === null){
-        return (
-          <article className="quiz" quiz-id={quiz.id}>
-            <div className="quiz__counter">1/10</div>
-            <div className="quiz__text">
-              <pre><p>{quiz.text}</p></pre>
-              <div className="codes"><pre><code>{quiz.code}</code></pre></div>
-            </div>
-            <section className="quiz__choice">
-              <div className="choice">test</div>
-              <div className="choice">test</div>
-              <div className="choice">test</div>
-              <div className="choice">test</div>
-            </section>
-          </article>
-        );
+        console.log(JSON.parse(quiz.text));
+        console.log("hi");
+        this.setState({quiz: JSON.parse(quiz.text)})
       }else{
         alert(err)
       }
-    })
+    });
+  }
+  constructor(props){
+    super(props);
+    this.state={
+      quiz: {},
+    };
+    this.getQuiz();
+  }
+  render(){
+    return (
+      <article className="quiz" quiz-id={this.state.quiz.id}>
+        <div className="quiz__counter">1/10</div>
+        <div className="quiz__text">
+          <pre><p>{this.state.quiz.text}</p></pre>
+          <div className="codes"><pre><code>{this.state.quiz.code}</code></pre></div>
+        </div>
+        <section className="quiz__choice">
+          <div className="choice">test</div>
+          <div className="choice">test</div>
+          <div className="choice">test</div>
+          <div className="choice">test</div>
+        </section>
+      </article>
+    );
   }
 }
 
