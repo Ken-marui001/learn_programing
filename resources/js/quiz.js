@@ -143,11 +143,11 @@ $(function(){
       timer = setInterval(countup, 100);
     })
 
-    $('.quiz-board').on('click', '.choice', function(){
+    $('.quiz-board').on('click', '.choice1', function(){
       const id = $(this).parents(".quiz").attr('quiz-id');
       const val = $(this).text();
       //ルーティングで設定した通り/api/quizzes/{id}/check/{val}となるよう文字列
-      let url = "/api/quizzes/" + String(id) + "/check/" + String(val)
+      let url = "/api/quizzes/" + String(id) + "/check/" + String(val);
       
       //問題番号と回答を送る事で、正解なら"0"を、不正解なら"-1"を返す
       $.ajax({

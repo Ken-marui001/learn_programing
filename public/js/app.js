@@ -71299,6 +71299,35 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
 /***/ }),
 
+/***/ "./resources/js/components/Choice.js":
+/*!*******************************************!*\
+  !*** ./resources/js/components/Choice.js ***!
+  \*******************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var react_dom__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-dom */ "./node_modules/react-dom/index.js");
+/* harmony import */ var react_dom__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react_dom__WEBPACK_IMPORTED_MODULE_1__);
+
+
+
+function Choice(props) {
+  return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+    className: "choice",
+    onClick: function onClick() {
+      props.onClick(props.id, props.text);
+    }
+  }, props.text);
+}
+
+/* harmony default export */ __webpack_exports__["default"] = (Choice);
+
+/***/ }),
+
 /***/ "./resources/js/components/Game.js":
 /*!*****************************************!*\
   !*** ./resources/js/components/Game.js ***!
@@ -71312,10 +71341,20 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var react_dom__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-dom */ "./node_modules/react-dom/index.js");
 /* harmony import */ var react_dom__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react_dom__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _Start__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Start */ "./resources/js/components/Start.js");
-/* harmony import */ var _Quiz__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Quiz */ "./resources/js/components/Quiz.js");
-/* harmony import */ var _Result__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Result */ "./resources/js/components/Result.js");
+/* harmony import */ var superagent__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! superagent */ "./node_modules/superagent/lib/client.js");
+/* harmony import */ var superagent__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(superagent__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _Start__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Start */ "./resources/js/components/Start.js");
+/* harmony import */ var _Quiz__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Quiz */ "./resources/js/components/Quiz.js");
+/* harmony import */ var _Result__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Result */ "./resources/js/components/Result.js");
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
+
+function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -71339,6 +71378,18 @@ function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || func
 
 
 
+
+function arr_shuffle(array) {
+  for (var i = array.length - 1; i > 0; i--) {
+    var r = Math.floor(Math.random() * (i + 1));
+    var tmp = array[i];
+    array[i] = array[r];
+    array[r] = tmp;
+  }
+
+  return array;
+}
+
 var Game =
 /*#__PURE__*/
 function (_React$Component) {
@@ -71351,13 +71402,43 @@ function (_React$Component) {
 
     _this = _possibleConstructorReturn(this, _getPrototypeOf(Game).call(this, props));
     _this.state = {
-      step: 0 //0: start, 1: quiz, 2: result
-
+      step: 0,
+      //0: start, 1: quiz, 2: result
+      quiz: [],
+      //get a quiz with ajax
+      quiz_count: 0,
+      id_array: arr_shuffle(_toConsumableArray(Array(num).keys()).map(function (i) {
+        return ++i;
+      })).slice(0, 10)
     };
+
+    _this.getQuiz();
+
     return _this;
   }
 
   _createClass(Game, [{
+    key: "getQuiz",
+    value: function getQuiz() {
+      var _this2 = this;
+
+      var url = "/api/quizzes/" + this.state.id_array[this.state.quiz_count];
+      superagent__WEBPACK_IMPORTED_MODULE_2___default.a.get(url).end(function (err, res) {
+        console.log(err, JSON.parse(res.text));
+
+        if (err === null) {
+          var quiz = JSON.parse(res.text);
+
+          _this2.setState({
+            quiz: quiz,
+            quiz_count: _this2.state.quiz_count + 1
+          });
+        } else {
+          alert(err);
+        }
+      });
+    }
+  }, {
     key: "handleStepMove",
     value: function handleStepMove() {
       console.log(this.state.step);
@@ -71366,23 +71447,44 @@ function (_React$Component) {
       });
     }
   }, {
+    key: "judgeAnswer",
+    value: function judgeAnswer(id, val) {
+      var _this3 = this;
+
+      var url = "/api/quizzes/" + String(id) + "/check/" + String(val);
+      superagent__WEBPACK_IMPORTED_MODULE_2___default.a.get(url).end(function (err, res) {
+        // console.log(err, JSON.parse(res.text))
+        if (err === null) {
+          _this3.getQuiz();
+        } else {
+          alert(err);
+        }
+      });
+    }
+  }, {
     key: "render",
     value: function render() {
-      var _this2 = this;
+      var _this4 = this;
 
       switch (this.state.step) {
         case 0:
-          return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_Start__WEBPACK_IMPORTED_MODULE_2__["default"], {
+          return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_Start__WEBPACK_IMPORTED_MODULE_3__["default"], {
             onClick: function onClick() {
-              _this2.handleStepMove();
+              _this4.handleStepMove();
             }
           });
 
         case 1:
-          return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_Quiz__WEBPACK_IMPORTED_MODULE_3__["default"], null);
+          return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_Quiz__WEBPACK_IMPORTED_MODULE_4__["default"], {
+            quiz: this.state.quiz,
+            quiz_count: this.state.quiz_count,
+            onClick: function onClick(id, val) {
+              _this4.judgeAnswer(id, val);
+            }
+          });
 
         case 2:
-          return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_Result__WEBPACK_IMPORTED_MODULE_4__["default"], null);
+          return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_Result__WEBPACK_IMPORTED_MODULE_5__["default"], null);
       }
     }
   }]);
@@ -71413,9 +71515,22 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react_dom__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react_dom__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var superagent__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! superagent */ "./node_modules/superagent/lib/client.js");
 /* harmony import */ var superagent__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(superagent__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _Choice__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Choice */ "./resources/js/components/Choice.js");
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
+
+function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
 function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
 
@@ -71423,13 +71538,10 @@ function _assertThisInitialized(self) { if (self === void 0) { throw new Referen
 
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
-
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
 
 
 
@@ -71451,69 +71563,59 @@ var Quiz =
 function (_React$Component) {
   _inherits(Quiz, _React$Component);
 
+  function Quiz() {
+    _classCallCheck(this, Quiz);
+
+    return _possibleConstructorReturn(this, _getPrototypeOf(Quiz).apply(this, arguments));
+  }
+
   _createClass(Quiz, [{
-    key: "getQuiz",
-    value: function getQuiz() {
-      var _this2 = this;
+    key: "handleJudge",
+    value: function handleJudge(id, val) {
+      var _this = this;
 
-      superagent__WEBPACK_IMPORTED_MODULE_2___default.a.get("/api/quizzes/10").end(function (err, res) {
-        console.log(err, JSON.parse(res.text));
-
+      var url = "/api/quizzes/" + String(id) + "/check/" + String(val);
+      superagent__WEBPACK_IMPORTED_MODULE_2___default.a.get(url).end(function (err, res) {
+        // console.log(err, JSON.parse(res.text))
         if (err === null) {
-          var quiz = JSON.parse(res.text);
-          var choices = [quiz.answer, quiz.wrong1, quiz.wrong2, quiz.wrong3];
-          choices = arr_shuffle(choices);
-
-          _this2.setState({
-            quiz: quiz,
-            choices: choices
-          });
+          _this.getQuiz();
         } else {
           alert(err);
         }
       });
     }
-  }]);
-
-  function Quiz(props) {
-    var _this;
-
-    _classCallCheck(this, Quiz);
-
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(Quiz).call(this, props));
-    _this.state = {
-      quiz: [],
-      choices: []
-    };
-
-    _this.getQuiz();
-
-    return _this;
-  }
-
-  _createClass(Quiz, [{
+  }, {
     key: "render",
     value: function render() {
+      var _this2 = this;
+
+      var arr_choices = [this.props.quiz.answer, this.props.quiz.wrong1, this.props.quiz.wrong2, this.props.quiz.wrong3];
+      console.log(arr_choices);
+      arr_choices = arr_shuffle(arr_choices);
+
+      var choices = _toConsumableArray(Array(4).keys()).map(function (i) {
+        return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_Choice__WEBPACK_IMPORTED_MODULE_3__["default"], {
+          key: i,
+          id: _this2.props.quiz.id,
+          text: arr_choices[i],
+          onClick: function onClick(id, val) {
+            _this2.props.onClick(id, val);
+          }
+        });
+      });
+
       return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("article", {
         className: "quiz",
-        "quiz-id": this.state.quiz.id
+        "quiz-id": this.props.quiz.id
       }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
         className: "quiz__counter"
-      }, "1/10"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+      }, this.props.quiz_count, "/10"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
         className: "quiz__text"
-      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("pre", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("p", null, this.state.quiz.text)), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("pre", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("p", null, this.props.quiz.text)), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
         className: "codes"
-      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("pre", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("code", null, this.state.quiz.code)))), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("section", {
+      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("pre", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("code", null, this.props.quiz.code)))), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("section", {
         className: "quiz__choice"
-      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
-        className: "choice"
-      }, this.state.choices[0]), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
-        className: "choice"
-      }, this.state.choices[1]), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
-        className: "choice"
-      }, this.state.choices[2]), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
-        className: "choice"
-      }, this.state.choices[3])));
+      }, choices));
     }
   }]);
 
@@ -71712,7 +71814,7 @@ $(function () {
 
       timer = setInterval(countup, 100);
     });
-    $('.quiz-board').on('click', '.choice', function () {
+    $('.quiz-board').on('click', '.choice1', function () {
       var id = $(this).parents(".quiz").attr('quiz-id');
       var val = $(this).text(); //ルーティングで設定した通り/api/quizzes/{id}/check/{val}となるよう文字列
 

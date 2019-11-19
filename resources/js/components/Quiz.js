@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import request from 'superagent';
+import Choice from './Choice';
 
 function arr_shuffle(array){
   for(var i = array.length - 1; i > 0; i--){
@@ -13,41 +14,32 @@ function arr_shuffle(array){
 }
 
 class Quiz extends React.Component {
-  getQuiz(){
-    request.get("/api/quizzes/10").end((err, res)=>{
-       console.log(err, JSON.parse(res.text))
+  handleJudge(id, val){
+    const url = "/api/quizzes/" + String(id) + "/check/" + String(val);
+    request.get(url).end((err, res)=>{
+      // console.log(err, JSON.parse(res.text))
       if(err === null){
-        let quiz = JSON.parse(res.text);
-        let choices = [quiz.answer, quiz.wrong1, quiz.wrong2, quiz.wrong3];
-
-        choices = arr_shuffle(choices);
-        this.setState({quiz: quiz, choices: choices})
+        this.getQuiz();
       }else{
         alert(err)
       }
     });
   }
-  constructor(props){
-    super(props);
-    this.state={
-      quiz: [],
-      choices: [],
-    };
-    this.getQuiz();
-  }
+
   render(){
+    let arr_choices = [this.props.quiz.answer, this.props.quiz.wrong1, this.props.quiz.wrong2, this.props.quiz.wrong3];
+    console.log(arr_choices);
+    arr_choices = arr_shuffle(arr_choices);
+    let choices = [...Array(4).keys()].map(i=><Choice key={i} id={this.props.quiz.id} text={arr_choices[i]} onClick={(id, val)=>{this.props.onClick(id, val)}}/>)
     return (
-      <article className="quiz" quiz-id={this.state.quiz.id}>
-        <div className="quiz__counter">1/10</div>
+      <article className="quiz" quiz-id={this.props.quiz.id}>
+        <div className="quiz__counter">{this.props.quiz_count}/10</div>
         <div className="quiz__text">
-          <pre><p>{this.state.quiz.text}</p></pre>
-          <div className="codes"><pre><code>{this.state.quiz.code}</code></pre></div>
+          <pre><p>{this.props.quiz.text}</p></pre>
+          <div className="codes"><pre><code>{this.props.quiz.code}</code></pre></div>
         </div>
         <section className="quiz__choice">
-          <div className="choice">{this.state.choices[0]}</div>
-          <div className="choice">{this.state.choices[1]}</div>
-          <div className="choice">{this.state.choices[2]}</div>
-          <div className="choice">{this.state.choices[3]}</div>
+          {choices}
         </section>
       </article>
     );
