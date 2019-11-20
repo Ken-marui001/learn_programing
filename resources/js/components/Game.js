@@ -21,8 +21,8 @@ class Game extends React.Component{
     this.state={
       step: 0,  //0: start, 1: quiz, 2: result
       quiz: [], //get a quiz with ajax
+      id_array: arr_shuffle([...Array(num).keys()].map(i => ++i)).slice(0, 10), //array shows these quiz-id
       quiz_count: 0,
-      id_array: arr_shuffle([...Array(num).keys()].map(i => ++i)).slice(0, 10),
     };
     this.getQuiz();
   }
@@ -30,7 +30,7 @@ class Game extends React.Component{
   getQuiz(){
     let url = "/api/quizzes/" + this.state.id_array[this.state.quiz_count];
     request.get(url).end((err, res)=>{
-       console.log(err, JSON.parse(res.text))
+      //  console.log(err, JSON.parse(res.text))
       if(err === null){
         let quiz = JSON.parse(res.text);
         this.setState({quiz: quiz, quiz_count: this.state.quiz_count+1});
@@ -41,7 +41,7 @@ class Game extends React.Component{
   }
 
   handleStepMove(){
-    console.log(this.state.step)
+    // console.log(this.state.step)
     this.setState({step: this.state.step+1});
   }
 
@@ -50,12 +50,17 @@ class Game extends React.Component{
     request.get(url).end((err, res)=>{
       // console.log(err, JSON.parse(res.text))
       if(err === null){
-        this.getQuiz();
+        if(this.state.quiz_count==10){
+          this.handleStepMove();
+        }else{
+          this.getQuiz();
+        }
       }else{
         alert(err)
       }
     });
   }
+
   render(){
     switch (this.state.step) {
       case 0:
