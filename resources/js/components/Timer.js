@@ -1,10 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-function Result(props) {
+function Timer(props) {
   return (
-    <div id="timer">{props.time}</div>
+    <div id="timer">{(props.count/10).toFixed(1)}s</div>
   );
 }
 
-export default Result;
+export default Timer;

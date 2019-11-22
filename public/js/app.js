@@ -71346,6 +71346,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Start__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Start */ "./resources/js/components/Start.js");
 /* harmony import */ var _Quiz__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Quiz */ "./resources/js/components/Quiz.js");
 /* harmony import */ var _Result__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Result */ "./resources/js/components/Result.js");
+/* harmony import */ var _Timer__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./Timer */ "./resources/js/components/Timer.js");
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
@@ -71371,6 +71372,7 @@ function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.g
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
 
 
 
@@ -71406,10 +71408,15 @@ function (_React$Component) {
       //0: start, 1: quiz, 2: result
       quiz: [],
       //get a quiz with ajax
-      quiz_count: 0,
+      choices: [],
       id_array: arr_shuffle(_toConsumableArray(Array(num).keys()).map(function (i) {
         return ++i;
-      })).slice(0, 10)
+      })).slice(0, 10),
+      //array shows these quiz-id
+      quiz_count: 0,
+      count: 0,
+      ranking_board: [],
+      your_rank: 0
     };
 
     _this.getQuiz();
@@ -71424,15 +71431,58 @@ function (_React$Component) {
 
       var url = "/api/quizzes/" + this.state.id_array[this.state.quiz_count];
       superagent__WEBPACK_IMPORTED_MODULE_2___default.a.get(url).end(function (err, res) {
-        console.log(err, JSON.parse(res.text));
-
+        //  console.log(err, JSON.parse(res.text))
         if (err === null) {
           var quiz = JSON.parse(res.text);
+          var choices = [quiz.answer, quiz.wrong1, quiz.wrong2, quiz.wrong3];
+          choices = arr_shuffle(choices);
 
           _this2.setState({
             quiz: quiz,
-            quiz_count: _this2.state.quiz_count + 1
+            quiz_count: _this2.state.quiz_count + 1,
+            choices: choices
           });
+        } else {
+          alert(err);
+        }
+      });
+    }
+  }, {
+    key: "registerRanking",
+    value: function registerRanking() {
+      var _this3 = this;
+
+      superagent__WEBPACK_IMPORTED_MODULE_2___default.a.post('/api/ranking').send({
+        name: user_name,
+        time: this.state.count
+      }).set('X-CSRF-TOKEN', document.querySelector('meta[name="csrf-token"]').getAttribute('content')).then(function (res) {
+        var rank_res = JSON.parse(res.text); // console.log(rank_res);
+
+        _this3.setState({
+          ranking_board: rank_res[0],
+          your_rank: rank_res[1]
+        });
+      });
+    }
+  }, {
+    key: "judgeAnswer",
+    value: function judgeAnswer(id, val) {
+      var _this4 = this;
+
+      var url = "/api/quizzes/" + String(id) + "/check/" + String(val);
+      superagent__WEBPACK_IMPORTED_MODULE_2___default.a.get(url).end(function (err, res) {
+        if (err === null) {
+          if (res.text === "0") {
+            if (_this4.state.quiz_count == 10) {
+              clearInterval(_this4.intervalTimer);
+
+              _this4.registerRanking();
+
+              _this4.handleStepMove();
+            } else {
+              _this4.getQuiz();
+            }
+          }
         } else {
           alert(err);
         }
@@ -71441,51 +71491,70 @@ function (_React$Component) {
   }, {
     key: "handleStepMove",
     value: function handleStepMove() {
-      console.log(this.state.step);
+      // console.log(this.state.step)
       this.setState({
         step: this.state.step + 1
       });
     }
   }, {
-    key: "judgeAnswer",
-    value: function judgeAnswer(id, val) {
-      var _this3 = this;
+    key: "countStart",
+    value: function countStart() {
+      var _this5 = this;
 
-      var url = "/api/quizzes/" + String(id) + "/check/" + String(val);
-      superagent__WEBPACK_IMPORTED_MODULE_2___default.a.get(url).end(function (err, res) {
-        // console.log(err, JSON.parse(res.text))
-        if (err === null) {
-          _this3.getQuiz();
-        } else {
-          alert(err);
-        }
+      this.intervalTimer = setInterval(function () {
+        _this5.countUp();
+      }, 100);
+    }
+  }, {
+    key: "countUp",
+    value: function countUp() {
+      this.setState({
+        count: this.state.count + 1
       });
     }
   }, {
     key: "render",
     value: function render() {
-      var _this4 = this;
+      var _this6 = this;
+
+      var game_view = [];
 
       switch (this.state.step) {
         case 0:
-          return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_Start__WEBPACK_IMPORTED_MODULE_3__["default"], {
+          game_view = react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_Start__WEBPACK_IMPORTED_MODULE_3__["default"], {
             onClick: function onClick() {
-              _this4.handleStepMove();
+              _this6.handleStepMove();
+
+              _this6.countStart();
             }
           });
+          break;
 
         case 1:
-          return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_Quiz__WEBPACK_IMPORTED_MODULE_4__["default"], {
+          game_view = react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_Quiz__WEBPACK_IMPORTED_MODULE_4__["default"], {
             quiz: this.state.quiz,
+            choices: this.state.choices,
             quiz_count: this.state.quiz_count,
             onClick: function onClick(id, val) {
-              _this4.judgeAnswer(id, val);
+              _this6.judgeAnswer(id, val);
             }
           });
+          break;
 
         case 2:
-          return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_Result__WEBPACK_IMPORTED_MODULE_5__["default"], null);
+          game_view = react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_Result__WEBPACK_IMPORTED_MODULE_5__["default"], {
+            time: this.state.count / 10,
+            rank: this.state.your_rank,
+            ranking_board: this.state.ranking_board
+          });
+          break;
       }
+
+      return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_Timer__WEBPACK_IMPORTED_MODULE_6__["default"], {
+        count: this.state.count
+      }), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+        className: "quiz-board"
+      }, game_view));
     }
   }]);
 
@@ -71494,8 +71563,8 @@ function (_React$Component) {
 
 /* harmony default export */ __webpack_exports__["default"] = (Game);
 
-if (document.getElementsByClassName('quiz-board')) {
-  react_dom__WEBPACK_IMPORTED_MODULE_1___default.a.render(react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(Game, null), document.getElementsByClassName('quiz-board')[0]);
+if (document.getElementsByClassName('game')) {
+  react_dom__WEBPACK_IMPORTED_MODULE_1___default.a.render(react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(Game, null), document.getElementsByClassName('game')[0]);
 }
 
 /***/ }),
@@ -71518,14 +71587,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Choice__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Choice */ "./resources/js/components/Choice.js");
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
-function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
-
-function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
-
-function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
-
-function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
-
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
@@ -71547,17 +71608,6 @@ function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || func
 
 
 
-function arr_shuffle(array) {
-  for (var i = array.length - 1; i > 0; i--) {
-    var r = Math.floor(Math.random() * (i + 1));
-    var tmp = array[i];
-    array[i] = array[r];
-    array[r] = tmp;
-  }
-
-  return array;
-}
-
 var Quiz =
 /*#__PURE__*/
 function (_React$Component) {
@@ -71570,40 +71620,20 @@ function (_React$Component) {
   }
 
   _createClass(Quiz, [{
-    key: "handleJudge",
-    value: function handleJudge(id, val) {
-      var _this = this;
-
-      var url = "/api/quizzes/" + String(id) + "/check/" + String(val);
-      superagent__WEBPACK_IMPORTED_MODULE_2___default.a.get(url).end(function (err, res) {
-        // console.log(err, JSON.parse(res.text))
-        if (err === null) {
-          _this.getQuiz();
-        } else {
-          alert(err);
-        }
-      });
-    }
-  }, {
     key: "render",
     value: function render() {
-      var _this2 = this;
+      var _this = this;
 
-      var arr_choices = [this.props.quiz.answer, this.props.quiz.wrong1, this.props.quiz.wrong2, this.props.quiz.wrong3];
-      console.log(arr_choices);
-      arr_choices = arr_shuffle(arr_choices);
-
-      var choices = _toConsumableArray(Array(4).keys()).map(function (i) {
+      var choices = this.props.choices.map(function (val, i) {
         return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_Choice__WEBPACK_IMPORTED_MODULE_3__["default"], {
           key: i,
-          id: _this2.props.quiz.id,
-          text: arr_choices[i],
+          id: _this.props.quiz.id,
+          text: val,
           onClick: function onClick(id, val) {
-            _this2.props.onClick(id, val);
+            _this.props.onClick(id, val);
           }
         });
       });
-
       return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("article", {
         className: "quiz",
         "quiz-id": this.props.quiz.id
@@ -71626,6 +71656,54 @@ function (_React$Component) {
 
 /***/ }),
 
+/***/ "./resources/js/components/RankingBoard.js":
+/*!*************************************************!*\
+  !*** ./resources/js/components/RankingBoard.js ***!
+  \*************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var react_dom__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-dom */ "./node_modules/react-dom/index.js");
+/* harmony import */ var react_dom__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react_dom__WEBPACK_IMPORTED_MODULE_1__);
+
+ // import List from './RankingList';
+
+function RankingBoard(props) {
+  var rankings = props.ranking.map(function (val, i) {
+    return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(List, {
+      key: i,
+      num: i,
+      data: val,
+      rank: props.rank
+    });
+  });
+  return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("ul", {
+    className: "rankings"
+  }, rankings);
+}
+
+function List(props) {
+  var rankIn = props.num + 1 === props.rank ? 'rankIn' : "";
+  console.log('hi');
+  return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("li", {
+    className: rankIn
+  }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+    className: "rankings__num"
+  }, "\u7B2C", react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("span", null, String(props.num + 1)), "\u4F4D"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+    className: "rankings__time"
+  }, parseFloat(props.data.time).toFixed(1), "\u79D2"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+    className: "rankings__name"
+  }, props.data.name));
+}
+
+/* harmony default export */ __webpack_exports__["default"] = (RankingBoard);
+
+/***/ }),
+
 /***/ "./resources/js/components/Result.js":
 /*!*******************************************!*\
   !*** ./resources/js/components/Result.js ***!
@@ -71639,17 +71717,30 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var react_dom__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-dom */ "./node_modules/react-dom/index.js");
 /* harmony import */ var react_dom__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react_dom__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _RankingBoard__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./RankingBoard */ "./resources/js/components/RankingBoard.js");
 
 
 
-function Result() {
+
+function Result(props) {
+  var message = react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null);
+
+  if (props.rank > 100) {
+    message = react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("p", null, "\u30E9\u30F3\u30AF\u5916\u3067\u3059\u3002100\u4F4D\u76EE\u6307\u3057\u3066\u9811\u5F35\u308A\u307E\u3057\u3087\u3046!!");
+  } else if (props.rank > 20) {
+    message = react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("p", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("span", null, props.rank, "\u4F4D"), "\u3067\u3059\u3002\u5165\u8CDE\u3092\u76EE\u6307\u3057\u307E\u3057\u3087\u3046!!");
+  } else {
+    message = react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("p", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("span", null, props.rank, "\u4F4D"), "\u3067\u3059\u3002\u5165\u8CDE\u304A\u3081\u3067\u3068\u3046\u3054\u3056\u3044\u307E\u3059!!");
+  }
+
   return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
-    "class": "result"
+    className: "result"
   }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
-    "class": "your-record"
-  }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("p", null, "\u3042\u306A\u305F\u306E\u8A18\u9332\u306F20.0\u79D2\u3067\u3059"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("p", null, "\u9806\u4F4D\u306F5\u4F4D\u3067\u3059\u3002\u5165\u8CDE\u304A\u3081\u3067\u3068\u3046\u3054\u3056\u3044\u307E\u3059!!")), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("ul", {
-    "class": "rankings"
-  }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("li", null, "\uFF11\u4F4D"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("li", null, "\uFF12\u4F4D")));
+    className: "your-record"
+  }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("p", null, "\u3042\u306A\u305F\u306E\u8A18\u9332\u306F", props.time.toFixed(1), "\u79D2\u3067\u3059"), message), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_RankingBoard__WEBPACK_IMPORTED_MODULE_2__["default"], {
+    ranking: props.ranking_board,
+    rank: props.rank
+  }));
 }
 
 /* harmony default export */ __webpack_exports__["default"] = (Result);
@@ -71682,6 +71773,32 @@ function Start(props) {
 }
 
 /* harmony default export */ __webpack_exports__["default"] = (Start);
+
+/***/ }),
+
+/***/ "./resources/js/components/Timer.js":
+/*!******************************************!*\
+  !*** ./resources/js/components/Timer.js ***!
+  \******************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var react_dom__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-dom */ "./node_modules/react-dom/index.js");
+/* harmony import */ var react_dom__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react_dom__WEBPACK_IMPORTED_MODULE_1__);
+
+
+
+function Timer(props) {
+  return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+    id: "timer"
+  }, (props.count / 10).toFixed(1), "s");
+}
+
+/* harmony default export */ __webpack_exports__["default"] = (Timer);
 
 /***/ }),
 
@@ -71797,22 +71914,20 @@ $(function () {
 
 
   if (location.pathname.match(/^\/$/)) {
-    var countup = function countup() {
-      count++;
-      $('#timer').text(String((count / 10).toFixed(1)) + "s");
-    };
-
     var count = 0;
     var timer = null;
     var quizzes = arr_shuffle(_toConsumableArray(Array(num).keys()).map(function (i) {
       return ++i;
     })).slice(0, 10);
     var wrong_count = 0;
-    var current_num = 1;
+    var current_num = 1; // function countup(){
+    //   count++;
+    //   $('#timer').text(String((count/10).toFixed(1))+"s");
+    // }
+
     $('.start.btn').on('click', function () {
       $('.start-view').removeClass('show'); // call_quiz(quizzes.pop(), current_num);
-
-      timer = setInterval(countup, 100);
+      // timer = setInterval(countup, 100);
     });
     $('.quiz-board').on('click', '.choice1', function () {
       var id = $(this).parents(".quiz").attr('quiz-id');

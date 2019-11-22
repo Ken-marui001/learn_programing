@@ -132,15 +132,15 @@ $(function(){
     let wrong_count = 0;
     let current_num = 1;
 
-    function countup(){
-      count++;
-      $('#timer').text(String((count/10).toFixed(1))+"s");
-    }
+    // function countup(){
+    //   count++;
+    //   $('#timer').text(String((count/10).toFixed(1))+"s");
+    // }
 
     $('.start.btn').on('click', function(){
       $('.start-view').removeClass('show');
       // call_quiz(quizzes.pop(), current_num);
-      timer = setInterval(countup, 100);
+      // timer = setInterval(countup, 100);
     })
 
     $('.quiz-board').on('click', '.choice1', function(){
