@@ -20,9 +20,13 @@ function arr_shuffle(array){
 class Game extends React.Component{
   /*
     getQuiz(): 非同期通信でクイズの中身を取得しstateを変更する
+
     registerRanking():非同期通信でテストの結果をデータベースに登録し、順位と上位20名のスコアを返す
+
     judgeAnswer(id, val): 渡されたクイズの番号(id)と回答(val)を非同期通信に使い、正解なら0を、不正解なら-1を返す
+
     handleStepMove(): stateに１を追加する事でスタート画面、クイズ画面、結果画面の遷移を実現する
+
     cuntStart(), countUp(): クイズの経過時間を管理する
   */
   constructor(props){
@@ -172,6 +176,6 @@ class Game extends React.Component{
 
 export default Game;
 
-if (document.getElementsByClassName('game')) {
+if (document.getElementsByClassName('game').length > 0) {
   ReactDOM.render(<Game />, document.getElementsByClassName('game')[0]);
 }
