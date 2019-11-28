@@ -84,7 +84,6 @@ class Game extends React.Component{
             this.getQuiz();
           }
         }else{
-          console.log(this.state.count + 10**this.state.wrong_count*50);
           this.setState({
             isReaction: true,
             reaction: "batsu",

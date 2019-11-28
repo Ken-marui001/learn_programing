@@ -15,7 +15,6 @@ function RankingBoard(props) {
 
 function List(props){
   let rankIn= props.num+1 === props.rank ? 'rankIn' : "";
-  console.log('hi');
   return(
     <li className={rankIn}>
       <div className="rankings__num">
