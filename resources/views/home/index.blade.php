@@ -8,7 +8,7 @@
 
     <div class="links">
         <a href="/game">Play</a>
-        <a href="https://laracasts.com">Rule</a>
+        <a href="/rule">Rule</a>
         <a href="https://laravel-news.com">About</a>
         <a href="https://github.com/Ken-marui001/learn_programing">GitHub</a>
     </div>

@@ -14,7 +14,11 @@
 //User Management
 Auth::routes();
 
-Route::get('/', 'GameController@index')->name('game');
+Route::get('/', 'HomeController@index');
+Route::get('rule', 'HomeController@rule');
+Route::get('about', 'HomeController@about');
+// Route::resource('home', 'HomeController');
+Route::get('/game', 'GameController@index')->name('game');
 Route::group(['middleware' => ['role:superAdmin']], function () {
     Route::resource('quizzes', 'QuizController');
 });

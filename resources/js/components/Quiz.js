@@ -1,6 +1,4 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
-import request from 'superagent';
 import Choice from './Choice';
 
 class Quiz extends React.Component {

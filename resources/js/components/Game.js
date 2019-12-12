@@ -119,12 +119,12 @@ class Game extends React.Component{
 
     //ready for Transition component
     const defaultStyle ={
-      transition: `opacity 500ms cubic-bezier(0,1.05,.92,.58)`,
+      transition: `opacity 200ms liner`,
       opacity: 0,
     }
     const transitionStyles ={
       entering: { opacity: 1 },
-      entered:  { opacity: 0 },
+      entered:  { opacity: 1 },
       exiting:  { opacity: 0 },
       exited:  { opacity: 0 },
     };
